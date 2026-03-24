@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    /* Casino dark theme — always dark */
+    --background: 0.09 0.008 267;
+    --foreground: 0.93 0.01 254;
+    --card: 0.16 0.018 264;
+    --card-foreground: 0.93 0.01 254;
+    --popover: 0.19 0.018 264;
+    --popover-foreground: 0.93 0.01 254;
+    --primary: 0.71 0.09 73;
+    --primary-foreground: 0.1 0.012 264;
+    --secondary: 0.19 0.018 264;
+    --secondary-foreground: 0.93 0.01 254;
+    --muted: 0.19 0.018 264;
+    --muted-foreground: 0.74 0.013 256;
+    --accent: 0.22 0.02 264;
+    --accent-foreground: 0.93 0.01 254;
+    --destructive: 0.55 0.22 27;
+    --destructive-foreground: 0.98 0 0;
+    --border: 0.71 0.09 73 / 20%;
+    --input: 0.22 0.02 264;
+    --ring: 0.71 0.09 73;
+
+    /* Casino-specific tokens */
+    --gold: 0.71 0.09 73;
+    --gold-light: 0.87 0.09 83;
+    --gold-muted: 0.65 0.085 73;
+    --gold-dim: 0.5 0.065 73;
+    --casino-card2: 0.19 0.018 264;
+    --casino-bg2: 0.12 0.012 264;
+    --neon-red: 0.62 0.22 27;
+    --neon-cyan: 0.82 0.14 213;
+    --neon-green: 0.82 0.2 150;
+    --neon-yellow: 0.87 0.18 85;
+    --neon-magenta: 0.62 0.22 310;
+
+    --chart-1: 0.71 0.09 73;
+    --chart-2: 0.82 0.14 213;
+    --chart-3: 0.62 0.22 27;
+    --chart-4: 0.87 0.18 85;
+    --chart-5: 0.82 0.2 150;
+    --sidebar: 0.16 0.018 264;
+    --sidebar-foreground: 0.93 0.01 254;
+    --sidebar-primary: 0.71 0.09 73;
+    --sidebar-primary-foreground: 0.1 0.012 264;
+    --sidebar-accent: 0.19 0.018 264;
+    --sidebar-accent-foreground: 0.93 0.01 254;
+    --sidebar-border: 0.71 0.09 73 / 20%;
+    --sidebar-ring: 0.71 0.09 73;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "General Sans", system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-brand {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  }
+
+  .glow-gold {
+    text-shadow: 0 0 20px oklch(0.71 0.09 73 / 80%), 0 0 40px
+      oklch(0.71 0.09 73 / 40%);
+  }
+
+  .glow-gold-box {
+    box-shadow: 0 0 20px oklch(0.71 0.09 73 / 40%), 0 0 60px
+      oklch(0.71 0.09 73 / 20%), inset 0 1px 0 oklch(0.87 0.09 83 / 30%);
+  }
+
+  .glow-red {
+    text-shadow: 0 0 16px oklch(0.62 0.22 27 / 90%), 0 0 32px
+      oklch(0.62 0.22 27 / 50%);
+  }
+
+  .glow-green {
+    text-shadow: 0 0 16px oklch(0.82 0.2 150 / 90%), 0 0 32px
+      oklch(0.82 0.2 150 / 50%);
+  }
+
+  .casino-card {
+    background: oklch(var(--card));
+    border: 1px solid oklch(var(--gold) / 25%);
+    border-radius: var(--radius);
+  }
+
+  .payline-highlight {
+    background: oklch(var(--gold) / 8%);
+    border-top: 2px solid oklch(var(--gold) / 70%);
+    border-bottom: 2px solid oklch(var(--gold) / 70%);
+    box-shadow: 0 0 12px oklch(var(--gold) / 30%) inset;
+  }
+
+  .spin-button {
+    background: linear-gradient(
+      145deg,
+      oklch(0.8 0.13 82),
+      oklch(0.71 0.09 73),
+      oklch(0.6 0.07 73)
+    );
+    box-shadow: 0 0 30px oklch(0.71 0.09 73 / 60%), 0 0 60px
+      oklch(0.71 0.09 73 / 30%), 0 4px 20px oklch(0.0 0 0 / 50%), inset 0 1px 0
+      oklch(0.9 0.11 85 / 60%);
+    transition: all 0.15s ease;
+  }
+
+  .spin-button:hover:not(:disabled) {
+    box-shadow: 0 0 40px oklch(0.71 0.09 73 / 80%), 0 0 80px
+      oklch(0.71 0.09 73 / 40%), 0 4px 20px oklch(0.0 0 0 / 50%), inset 0 1px 0
+      oklch(0.9 0.11 85 / 60%);
+    transform: translateY(-1px);
+  }
+
+  .spin-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .reel-container {
+    background: linear-gradient(
+      180deg,
+      oklch(0.07 0.008 267),
+      oklch(0.12 0.015 264),
+      oklch(0.07 0.008 267)
+    );
+    border: 1px solid oklch(var(--gold) / 30%);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .reel-container::before,
+  .reel-container::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .reel-container::before {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      oklch(0.07 0.008 267 / 90%),
+      transparent
+    );
+  }
+
+  .reel-container::after {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      oklch(0.07 0.008 267 / 90%),
+      transparent
+    );
+  }
+}
+
+@keyframes reel-spin {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes win-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-8px);
+  }
+  30% {
+    transform: translateX(8px);
+  }
+  45% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(6px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 30px oklch(0.71 0.09 73 / 60%), 0 0 60px
+      oklch(0.71 0.09 73 / 30%);
+  }
+  50% {
+    box-shadow: 0 0 50px oklch(0.71 0.09 73 / 90%), 0 0 100px
+      oklch(0.71 0.09 73 / 50%);
+  }
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes coin-drop {
+  0% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(4px) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

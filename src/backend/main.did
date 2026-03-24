@@ -1,0 +1,60 @@
+type WinRecord = 
+ record {
+   payout: nat;
+   player: principal;
+   reels: vec Symbol;
+   timestamp: int;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   email: opt text;
+   name: text;
+ };
+type Symbol = 
+ variant {
+   bar;
+   bell;
+   cherry;
+   lemon;
+   orange;
+   seven;
+ };
+type SpinResult = 
+ record {
+   multiplierBps: nat;
+   payout: nat;
+   reels: vec Symbol;
+   won: bool;
+ };
+type PlayerStats = 
+ record {
+   hasPaid: bool;
+   totalSpent: nat;
+   totalSpins: nat;
+   totalWon: nat;
+ };
+service : {
+  _initializeAccessControlWithSecret: (userSecret: text) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getLeaderboard: () -> (vec record {
+                               principal;
+                               PlayerStats;
+                             }) query;
+  getMyICPBalance: () -> (nat);
+  getMyInfo: () -> (PlayerStats) query;
+  getMyStats: () -> (PlayerStats) query;
+  getPoolBalance: () -> (nat);
+  getRecentWins: () -> (vec WinRecord) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isCallerAdmin: () -> (bool) query;
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  spin: (betAmountE8s: nat) -> (SpinResult);
+}
