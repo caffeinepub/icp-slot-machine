@@ -15,6 +15,7 @@ import { approveICP } from "../utils/icrc2";
 import Reel from "./Reel";
 
 const BET_OPTIONS = [
+  { label: "0.01", e8s: BigInt(1_000_000) },
   { label: "0.1", e8s: BigInt(10_000_000) },
   { label: "0.5", e8s: BigInt(50_000_000) },
   { label: "1", e8s: BigInt(100_000_000) },

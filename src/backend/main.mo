@@ -159,7 +159,7 @@ actor self {
   };
 
   func isValidBet(amount : Nat) : Bool {
-    amount == 10_000_000 or amount == 50_000_000 or amount == 100_000_000 or amount == 250_000_000 or amount == 1_000_000_000;
+    amount == 1_000_000 or amount == 10_000_000 or amount == 50_000_000 or amount == 100_000_000 or amount == 250_000_000 or amount == 1_000_000_000;
   };
 
   func compareByWins(a : (Principal, PlayerStats), b : (Principal, PlayerStats)) : Order.Order {
@@ -173,7 +173,7 @@ actor self {
       Runtime.trap("Login required");
     };
     if (not isValidBet(betAmountE8s)) {
-      Runtime.trap("Invalid bet. Use 0.1, 0.5, 1, 2.5 or 10 ICP");
+      Runtime.trap("Invalid bet. Use 0.01, 0.1, 0.5, 1, 2.5 or 10 ICP");
     };
     if (spinningPlayers.get(caller) == ?true) {
       Runtime.trap("Spin already in progress");

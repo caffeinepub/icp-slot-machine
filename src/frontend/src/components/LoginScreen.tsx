@@ -29,7 +29,7 @@ const FEATURES = [
   },
 ];
 
-const BET_SIZES = ["0.1", "0.5", "1", "2.5", "10"];
+const BET_SIZES = ["0.01", "0.1", "0.5", "1", "2.5", "10"];
 
 // Luxury ambient decorations — NO emojis, only typographic glyphs & Roman numerals
 const AMBIENT_GLYPHS = [
