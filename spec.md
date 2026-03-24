@@ -1,28 +1,24 @@
-# ICP Slot Machine
+# SpinLuxe Casino - Auszahlungsfunktion
 
 ## Current State
-Fully functional casino slot machine with Internet Identity login, real ICP via ICRC-2/ICRC-1, pool balance shown in sidebar and slot machine, player stats, leaderboard, recent wins. Backend exposes getMyICPBalance() but frontend does not use it. No way to donate ICP to the pool from within the app.
+Der Header zeigt die ICP-Balance des eingeloggten Spielers an (Balance-Card mit Coins-Icon, Betrag und Refresh-Button). Es gibt keine Möglichkeit, ICP aus dem App-Konto an eine externe Wallet zu senden.
+
+Die `transferICP`-Funktion existiert bereits in `src/frontend/src/utils/icrc2.ts` und führt ICRC-1 Transfers per Identity durch.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Player ICP balance display (from getMyICPBalance()) shown in the Header next to principal ID.
-- Donate-to-pool feature: button near pool balance in Sidebar that opens a dialog where user enters an ICP amount and transfers it directly to the casino canister via ICRC-1.
-- useMyBalance hook in useQueries.ts.
-- transferICP utility (ICRC-1 direct transfer from frontend identity to target principal).
+- `WithdrawDialog`-Komponente: Ein Dialog mit Eingabefeld für Ziel-Principal-ID und Betrag in ICP. Validierung: Adresse muss gültig sein, Betrag muss > 0 und <= (Balance - 0.0001 ICP Fee) sein. Zeigt Transaktionsgebühr (0.0001 ICP) als Hinweis. Nach erfolgreichem Transfer: Erfolgsmeldung, Balance wird neu geladen.
+- "Auszahlen"-Button im Header, neben der Balance-Card, nur wenn eingeloggt. Button öffnet WithdrawDialog.
 
 ### Modify
-- Header.tsx: show live ICP balance when logged in.
-- Sidebar.tsx: add donate button to pool card.
-- useQueries.ts: add useMyBalance, invalidate after spin and donation.
+- `Header.tsx`: Import und Einbindung des WithdrawDialog, "Auszahlen"-Button hinzufügen.
 
 ### Remove
-- Nothing.
+- Nichts
 
 ## Implementation Plan
-1. Add transferICP(identity, toPrincipalText, amountE8s) to utils/icrc2.ts using ICP ledger icrc1_transfer.
-2. Add useMyBalance() hook to useQueries.ts calling actor.getMyICPBalance().
-3. Update useInvalidateAfterSpin to also invalidate myBalance query.
-4. Show player balance in Header.tsx next to principal ID when logged in.
-5. Add Pool auffuellen button in Sidebar pool card opening a shadcn Dialog with ICP amount input and confirm button. On confirm call transferICP to backend canister ID, then invalidate pool and balance queries.
-6. Validate and build.
+1. Neue Datei `src/frontend/src/components/WithdrawDialog.tsx` erstellen mit Dialog-Logik.
+2. `transferICP` aus `icrc2.ts` importieren und aufrufen.
+3. `Header.tsx` anpassen: Button und Dialog einbinden.
+4. Balance nach Transfer automatisch neu laden via `queryClient.invalidateQueries`.

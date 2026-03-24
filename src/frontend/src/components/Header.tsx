@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
+  ArrowUpRight,
   Coins,
   Crown,
   Infinity as InfinityIcon,
@@ -9,8 +10,10 @@ import {
   LogOut,
   RefreshCw,
 } from "lucide-react";
+import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useMyBalance } from "../hooks/useQueries";
+import WithdrawDialog from "./WithdrawDialog";
 
 function formatICP(e8s: bigint): string {
   return (Number(e8s) / 100_000_000).toFixed(2);
@@ -24,6 +27,7 @@ export default function Header() {
   const principalShort = identity
     ? `${identity.getPrincipal().toString().slice(0, 8)}...`
     : null;
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   function handleRefreshBalance() {
     queryClient.invalidateQueries({
@@ -93,6 +97,17 @@ export default function Header() {
               <span className="hidden lg:block text-xs text-muted-foreground font-mono">
                 {principalShort}
               </span>
+              {/* Withdraw Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setWithdrawOpen(true)}
+                data-ocid="header.open_modal_button"
+                className="border-gold/30 text-gold hover:bg-gold/10 hover:text-gold gap-1.5"
+              >
+                <ArrowUpRight className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Auszahlen</span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -103,6 +118,13 @@ export default function Header() {
                 <LogOut className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
+              <WithdrawDialog
+                open={withdrawOpen}
+                onOpenChange={setWithdrawOpen}
+                balance={balanceQuery.data ?? BigInt(0)}
+                identity={identity}
+                onSuccess={handleRefreshBalance}
+              />
             </div>
           ) : (
             <Button
