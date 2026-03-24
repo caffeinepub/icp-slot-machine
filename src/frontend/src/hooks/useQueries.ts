@@ -1,4 +1,5 @@
 import type { Principal } from "@icp-sdk/core/principal";
+import { Principal as PrincipalClass } from "@icp-sdk/core/principal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PlayerStats, WinRecord } from "../backend";
 import { loadConfig } from "../config";
@@ -7,14 +8,15 @@ import { useActor } from "./useActor";
 import { useInternetIdentity } from "./useInternetIdentity";
 
 export function usePoolBalance() {
-  const { actor, isFetching } = useActor();
   return useQuery<bigint>({
     queryKey: ["poolBalance"],
     queryFn: async () => {
-      if (!actor) return BigInt(0);
-      return actor.getPoolBalance();
+      const config = await loadConfig();
+      const canisterPrincipal = PrincipalClass.fromText(
+        config.backend_canister_id,
+      );
+      return queryICPBalance(canisterPrincipal, config.backend_host);
     },
-    enabled: !!actor && !isFetching,
     refetchInterval: 10_000,
     staleTime: 5_000,
   });
