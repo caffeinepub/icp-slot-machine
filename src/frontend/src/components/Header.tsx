@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  AlertCircle,
   Coins,
   Crown,
   Infinity as InfinityIcon,
   Loader2,
   LogOut,
+  RefreshCw,
 } from "lucide-react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useMyBalance } from "../hooks/useQueries";
@@ -16,10 +19,17 @@ function formatICP(e8s: bigint): string {
 export default function Header() {
   const { identity, login, clear, isLoggingIn } = useInternetIdentity();
   const balanceQuery = useMyBalance();
+  const queryClient = useQueryClient();
   const isLoggedIn = !!identity;
   const principalShort = identity
     ? `${identity.getPrincipal().toString().slice(0, 8)}...`
     : null;
+
+  function handleRefreshBalance() {
+    queryClient.invalidateQueries({
+      queryKey: ["myBalance", identity?.getPrincipal().toString()],
+    });
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gold/20 bg-casino-bg2/95 backdrop-blur-md">
@@ -55,11 +65,29 @@ export default function Header() {
                 <Coins className="h-3.5 w-3.5 text-gold" />
                 {balanceQuery.isLoading ? (
                   <Loader2 className="h-3 w-3 animate-spin text-gold/60" />
+                ) : balanceQuery.isError ? (
+                  <span className="text-xs font-bold text-red-400 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    Fehler
+                  </span>
                 ) : (
                   <span className="text-xs font-bold text-gold tabular-nums">
                     {formatICP(balanceQuery.data ?? BigInt(0))} ICP
                   </span>
                 )}
+                <button
+                  type="button"
+                  onClick={handleRefreshBalance}
+                  disabled={balanceQuery.isFetching}
+                  className="ml-1 text-gold/50 hover:text-gold transition-colors disabled:opacity-30"
+                  title="Balance aktualisieren"
+                >
+                  <RefreshCw
+                    className={`h-3 w-3 ${
+                      balanceQuery.isFetching ? "animate-spin" : ""
+                    }`}
+                  />
+                </button>
               </div>
               {/* Principal */}
               <span className="hidden lg:block text-xs text-muted-foreground font-mono">

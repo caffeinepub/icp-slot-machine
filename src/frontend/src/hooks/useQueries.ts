@@ -1,6 +1,8 @@
 import type { Principal } from "@icp-sdk/core/principal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PlayerStats, WinRecord } from "../backend";
+import { loadConfig } from "../config";
+import { queryICPBalance } from "../utils/icpLedger";
 import { useActor } from "./useActor";
 import { useInternetIdentity } from "./useInternetIdentity";
 
@@ -19,18 +21,18 @@ export function usePoolBalance() {
 }
 
 export function useMyBalance() {
-  const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
   return useQuery<bigint>({
     queryKey: ["myBalance", identity?.getPrincipal().toString()],
     queryFn: async () => {
-      if (!actor || !identity) return BigInt(0);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (actor as any).getMyICPBalance() as Promise<bigint>;
+      if (!identity) return BigInt(0);
+      const config = await loadConfig();
+      return queryICPBalance(identity.getPrincipal(), config.backend_host);
     },
-    enabled: !!actor && !!identity && !isFetching,
+    enabled: !!identity,
     refetchInterval: 15_000,
     staleTime: 10_000,
+    retry: 2,
   });
 }
 

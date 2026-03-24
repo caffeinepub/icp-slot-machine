@@ -14,13 +14,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Principal } from "@icp-sdk/core/principal";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  Check,
   Clock,
   Coins,
+  Copy,
   Crown,
   Gift,
   Loader2,
   TrendingUp,
   Trophy,
+  Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -59,6 +62,80 @@ function ReelMini({ symbols }: { symbols: SlotSymbol[] }) {
           <SymbolDisplay symbol={s} />
         </span>
       ))}
+    </div>
+  );
+}
+
+function DepositAddressCard() {
+  const { identity } = useInternetIdentity();
+  const [copied, setCopied] = useState(false);
+
+  if (!identity) return null;
+
+  const principal = identity.getPrincipal().toString();
+
+  function handleCopy() {
+    navigator.clipboard.writeText(principal).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      toast.success("Adresse kopiert!");
+    });
+  }
+
+  return (
+    <div
+      className="casino-card p-5 shadow-card border-amber-500/30"
+      data-ocid="deposit.card"
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <Wallet className="h-4 w-4 text-amber-400" />
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-400">
+          Einzahlungsadresse
+        </p>
+      </div>
+
+      <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+        Sende ICP von deinem{" "}
+        <span className="text-amber-300 font-semibold">NNS-Wallet</span> an
+        diese Adresse. Jede App erhält eine eigene Principal-ID — diese ist
+        ausschließlich für SpinLuxe.
+      </p>
+
+      <div className="rounded-lg bg-black/40 border border-amber-500/20 p-3 mb-3">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">
+          Deine Principal ID
+        </p>
+        <p
+          className="font-mono text-[11px] text-amber-200 break-all leading-relaxed"
+          data-ocid="deposit.panel"
+        >
+          {principal}
+        </p>
+      </div>
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleCopy}
+        data-ocid="deposit.button"
+        className="w-full border-amber-500/30 text-amber-300 hover:bg-amber-500/10 hover:text-amber-200 gap-2 transition-colors"
+      >
+        {copied ? (
+          <>
+            <Check className="h-3.5 w-3.5 text-green-400" />
+            <span className="text-green-400">Kopiert!</span>
+          </>
+        ) : (
+          <>
+            <Copy className="h-3.5 w-3.5" />
+            Adresse kopieren
+          </>
+        )}
+      </Button>
+
+      <p className="text-[10px] text-muted-foreground/60 mt-2.5 text-center">
+        💡 Im NNS: "Senden" → Principal-Format wählen
+      </p>
     </div>
   );
 }
@@ -226,6 +303,9 @@ export default function Sidebar() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Deposit Address Card -- only shown when logged in */}
+      <DepositAddressCard />
+
       {/* Pool Balance Card */}
       <div className="casino-card p-5 shadow-card" data-ocid="sidebar.card">
         <div className="flex items-center gap-2 mb-3">

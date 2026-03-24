@@ -18,6 +18,8 @@ export default {
       fontFamily: {
         brand: ["Bricolage Grotesque", "system-ui", "sans-serif"],
         sans: ["General Sans", "system-ui", "sans-serif"],
+        playfair: ["Playfair Display", "Georgia", "serif"],
+        "accent-italic": ["Instrument Serif", "Georgia", "serif"],
       },
       colors: {
         border: "oklch(var(--border))",
