@@ -17,7 +17,6 @@ actor self {
   include MixinAuthorization(accessControlState);
 
   ///// UPGRADE COMPATIBILITY: kept from previous version /////
-  // These vars existed in the old version and must stay to allow upgrade.
   let ENTRY_FEE : Nat = 500_000_000;
   let MAX_BET : Nat = 20;
   let SYMBOL_WEIGHTS : [Nat] = [2, 5, 8, 15, 20, 20];
@@ -75,18 +74,16 @@ actor self {
   let ICP_FEE : Nat = 10_000;
 
   ///// TYPES /////
-  // PlayerStats keeps old field names for upgrade compatibility.
-  // totalWon = total ICP won (e8s), totalSpent = total ICP spent (e8s).
   type Symbol = { #seven; #bar; #bell; #cherry; #orange; #lemon };
   public type PlayerStats = {
-    hasPaid : Bool;   // kept for upgrade compat (unused in new logic)
+    hasPaid : Bool;
     totalSpins : Nat;
     totalWon : Nat;   // e8s
     totalSpent : Nat; // e8s
   };
   public type SpinResult = {
     reels : [Symbol];
-    multiplierBps : Nat;
+    multiplier : Nat;  // renamed from multiplierBps
     payout : Nat;
     won : Bool;
   };
@@ -130,7 +127,7 @@ actor self {
     };
   };
 
-  func calcMultiplierBps(s0 : Symbol, s1 : Symbol, s2 : Symbol) : Nat {
+  func calcMultiplier(s0 : Symbol, s1 : Symbol, s2 : Symbol) : Nat {
     if (symbolEq(s0, s1) and symbolEq(s1, s2)) {
       switch (s0) {
         case (#seven) { 10000 };
@@ -215,8 +212,8 @@ actor self {
     let s2 = getSymbol(r2);
     let reels = [s0, s1, s2];
 
-    let multiplierBps = calcMultiplierBps(s0, s1, s2);
-    let grossPayout = betAmountE8s * multiplierBps / 100;
+    let multiplier = calcMultiplier(s0, s1, s2);
+    let grossPayout = betAmountE8s * multiplier / 100;
 
     var actualPayout : Nat = 0;
     if (grossPayout > ICP_FEE * 2) {
@@ -257,7 +254,7 @@ actor self {
     };
 
     spinningPlayers.remove(caller);
-    { reels; multiplierBps; payout = actualPayout; won = actualPayout > 0 };
+    { reels; multiplier; payout = actualPayout; won = actualPayout > 0 };
   };
 
   public shared ({ caller }) func getMyICPBalance() : async Nat {
@@ -276,7 +273,6 @@ actor self {
     };
   };
 
-  // Kept for frontend compatibility
   public query ({ caller }) func getMyInfo() : async PlayerStats {
     switch (players.get(caller)) {
       case (null) { { hasPaid = false; totalSpins = 0; totalWon = 0; totalSpent = 0 } };
