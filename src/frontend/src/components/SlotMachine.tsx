@@ -11,6 +11,7 @@ import {
   useMyStats,
   usePoolBalance,
 } from "../hooks/useQueries";
+import { useSlotSounds } from "../hooks/useSlotSounds";
 import { approveICP } from "../utils/icrc2";
 import Reel from "./Reel";
 
@@ -25,6 +26,7 @@ const BET_OPTIONS = [
 
 const ICP_FEE = BigInt(10_000);
 const COIN_POSITIONS = [15, 33, 51, 69, 87];
+const MAX_SPIN_MS = 3000;
 
 function formatICP(e8s: bigint): string {
   return (Number(e8s) / 100_000_000).toFixed(4);
@@ -50,6 +52,8 @@ export default function SlotMachine() {
   const poolBalanceQuery = usePoolBalance();
   const myStatsQuery = useMyStats();
   const invalidate = useInvalidateAfterSpin();
+  const { startSpinSound, stopSpinSound, playReelStop, playWin, playLose } =
+    useSlotSounds();
 
   const [selectedBetIdx, setSelectedBetIdx] = useState(2);
   const [spinning, setSpinning] = useState(false);
@@ -61,6 +65,8 @@ export default function SlotMachine() {
   const [animState, setAnimState] = useState<"idle" | "win" | "lose">("idle");
   const [lastWin, setLastWin] = useState<bigint>(BigInt(0));
   const stoppedReels = useRef(0);
+  const spinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingResultRef = useRef<SpinResult | null>(null);
 
   const selectedBet = BET_OPTIONS[selectedBetIdx];
   const poolBalance = poolBalanceQuery.data ?? BigInt(0);
@@ -71,29 +77,54 @@ export default function SlotMachine() {
     poolBalance > (selectedBet?.e8s ?? BigInt(0));
 
   const handleReelStopped = useCallback(() => {
+    playReelStop();
     stoppedReels.current += 1;
     if (stoppedReels.current >= 3) {
       setTimeout(() => {
         setShowResult(true);
+        // Apply pending result if animation stopped before backend returned
+        if (pendingResultRef.current) {
+          const r = pendingResultRef.current;
+          pendingResultRef.current = null;
+          if (r.won) {
+            setAnimState("win");
+            setLastWin(r.payout);
+            playWin();
+            toast.success(`Gewonnen! +${formatICP(r.payout)} ICP`);
+          } else {
+            setAnimState("lose");
+            playLose();
+          }
+          setSpinResult(r);
+          invalidate();
+        }
         setTimeout(() => {
           setShowResult(false);
           setAnimState("idle");
         }, 2500);
       }, 100);
     }
-  }, []);
+  }, [playReelStop, playWin, playLose, invalidate]);
 
   async function handleSpin() {
     if (!canSpin || !identity || !actor || !selectedBet) return;
     setShowResult(false);
     setAnimState("idle");
     stoppedReels.current = 0;
+    pendingResultRef.current = null;
 
     try {
       const config = await loadConfig();
       const backendCanisterId = config.backend_canister_id;
 
       setSpinning(true);
+      startSpinSound();
+
+      // Force-stop animation after MAX_SPIN_MS
+      spinTimeoutRef.current = setTimeout(() => {
+        stopSpinSound();
+        setSpinning(false);
+      }, MAX_SPIN_MS);
 
       toast.info("ICP Freigabe wird beantragt...", { duration: 3000 });
       const approvalAmount = selectedBet.e8s + ICP_FEE * 2n;
@@ -102,23 +133,48 @@ export default function SlotMachine() {
       toast.info("Spin läuft...", { duration: 2000 });
       const result = await actor.spin(selectedBet.e8s);
 
+      // Clear the timeout — backend returned in time
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+        spinTimeoutRef.current = null;
+      }
+
       const r0 = (result.reels[0] ?? SlotSymbol.lemon) as SlotSymbol;
       const r1 = (result.reels[1] ?? SlotSymbol.lemon) as SlotSymbol;
       const r2 = (result.reels[2] ?? SlotSymbol.lemon) as SlotSymbol;
       setReelResults([r0, r1, r2]);
       setSpinResult(result);
 
-      if (result.won) {
-        setAnimState("win");
-        setLastWin(result.payout);
-        toast.success(`Gewonnen! +${formatICP(result.payout)} ICP`);
+      // Check if animation already stopped (timeout fired)
+      if (!spinning || stoppedReels.current >= 3) {
+        // Reels already stopped — apply result now
+        if (result.won) {
+          setAnimState("win");
+          setLastWin(result.payout);
+          playWin();
+          toast.success(`Gewonnen! +${formatICP(result.payout)} ICP`);
+        } else {
+          setAnimState("lose");
+          playLose();
+        }
+        invalidate();
       } else {
-        setAnimState("lose");
-      }
+        // Reels still spinning — store result; handleReelStopped will apply it
+        pendingResultRef.current = result;
 
-      setSpinning(false);
-      invalidate();
+        if (result.won) {
+          setLastWin(result.payout);
+        }
+
+        stopSpinSound();
+        setSpinning(false);
+      }
     } catch (e) {
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+        spinTimeoutRef.current = null;
+      }
+      stopSpinSound();
       const msg = e instanceof Error ? e.message : "Spin fehlgeschlagen";
       toast.error(msg);
       setSpinning(false);
