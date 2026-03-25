@@ -72,7 +72,7 @@ export default function Header() {
                 ) : balanceQuery.isError ? (
                   <span className="text-xs font-bold text-red-400 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    Fehler
+                    Error
                   </span>
                 ) : (
                   <span className="text-xs font-bold text-gold tabular-nums">
@@ -84,7 +84,7 @@ export default function Header() {
                   onClick={handleRefreshBalance}
                   disabled={balanceQuery.isFetching}
                   className="ml-1 text-gold/50 hover:text-gold transition-colors disabled:opacity-30"
-                  title="Balance aktualisieren"
+                  title="Refresh balance"
                 >
                   <RefreshCw
                     className={`h-3 w-3 ${
@@ -106,7 +106,7 @@ export default function Header() {
                 className="border-gold/30 text-gold hover:bg-gold/10 hover:text-gold gap-1.5"
               >
                 <ArrowUpRight className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Auszahlen</span>
+                <span className="hidden sm:inline">Withdraw</span>
               </Button>
               <Button
                 variant="outline"

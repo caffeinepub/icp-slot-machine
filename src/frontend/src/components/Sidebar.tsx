@@ -78,7 +78,7 @@ function DepositAddressCard() {
     navigator.clipboard.writeText(principal).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast.success("Adresse kopiert!");
+      toast.success("Address copied!");
     });
   }
 
@@ -90,20 +90,20 @@ function DepositAddressCard() {
       <div className="flex items-center gap-2 mb-3">
         <Wallet className="h-4 w-4 text-amber-400" />
         <p className="text-xs font-bold uppercase tracking-widest text-amber-400">
-          Einzahlungsadresse
+          Deposit Address
         </p>
       </div>
 
       <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-        Sende ICP von deinem{" "}
-        <span className="text-amber-300 font-semibold">NNS-Wallet</span> an
-        diese Adresse. Jede App erhält eine eigene Principal-ID — diese ist
-        ausschließlich für SpinLuxe.
+        Send ICP from your{" "}
+        <span className="text-amber-300 font-semibold">NNS Wallet</span> to this
+        address. Each app gets its own Principal ID — this one is exclusively
+        for SpinLuxe.
       </p>
 
       <div className="rounded-lg bg-black/40 border border-amber-500/20 p-3 mb-3">
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">
-          Deine Principal ID
+          Your Principal ID
         </p>
         <p
           className="font-mono text-[11px] text-amber-200 break-all leading-relaxed"
@@ -123,18 +123,18 @@ function DepositAddressCard() {
         {copied ? (
           <>
             <Check className="h-3.5 w-3.5 text-green-400" />
-            <span className="text-green-400">Kopiert!</span>
+            <span className="text-green-400">Copied!</span>
           </>
         ) : (
           <>
             <Copy className="h-3.5 w-3.5" />
-            Adresse kopieren
+            Copy Address
           </>
         )}
       </Button>
 
       <p className="text-[10px] text-muted-foreground/60 mt-2.5 text-center">
-        💡 Im NNS: "Senden" → Principal-Format wählen
+        In NNS: "Send" → choose Principal format
       </p>
     </div>
   );
@@ -173,14 +173,12 @@ function DonateDialog() {
         queryKey: ["myBalance", identity.getPrincipal().toString()],
       });
       toast.success(
-        `✅ ${formatICP(amountE8s)} ICP erfolgreich in den Pool eingezahlt!`,
+        `${formatICP(amountE8s)} ICP successfully added to the pool!`,
       );
       setAmount("");
       setOpen(false);
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Transaktion fehlgeschlagen",
-      );
+      toast.error(err instanceof Error ? err.message : "Transaction failed");
     } finally {
       setIsSending(false);
     }
@@ -198,7 +196,7 @@ function DonateDialog() {
           className="w-full mt-3 border-gold/30 text-gold hover:bg-gold/10 hover:text-gold gap-2"
         >
           <Gift className="h-3.5 w-3.5" />
-          Pool auffüllen
+          Fund Pool
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -207,20 +205,17 @@ function DonateDialog() {
       >
         <DialogHeader>
           <DialogTitle className="text-gold font-brand text-lg">
-            Pool auffüllen
+            Fund Pool
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Sende beliebig viel ICP direkt in den Casino Pool.
+            Send any amount of ICP directly into the Casino Pool.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Balance display */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/20">
             <Coins className="h-4 w-4 text-gold shrink-0" />
-            <span className="text-sm text-muted-foreground">
-              Dein Guthaben:
-            </span>
+            <span className="text-sm text-muted-foreground">Your Balance:</span>
             {balanceQuery.isLoading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-gold/60" />
             ) : (
@@ -230,13 +225,12 @@ function DonateDialog() {
             )}
           </div>
 
-          {/* Amount input */}
           <div className="space-y-1.5">
             <Label
               htmlFor="donate-amount"
               className="text-xs text-muted-foreground uppercase tracking-wider"
             >
-              Betrag in ICP
+              Amount in ICP
             </Label>
             <Input
               id="donate-amount"
@@ -244,7 +238,7 @@ function DonateDialog() {
               type="number"
               min="0"
               step="0.1"
-              placeholder="z.B. 1.0"
+              placeholder="e.g. 1.0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="bg-accent/20 border-gold/20 text-foreground placeholder:text-muted-foreground/50 focus:border-gold/50"
@@ -254,13 +248,13 @@ function DonateDialog() {
                 data-ocid="sidebar.error_state"
                 className="text-xs text-red-400"
               >
-                Nicht genug ICP. Verfügbar: {formatICP(balanceE8s)} ICP (inkl.{" "}
-                {formatICP(ICP_FEE_E8S)} Gebühr)
+                Insufficient ICP. Available: {formatICP(balanceE8s)} ICP (incl.{" "}
+                {formatICP(ICP_FEE_E8S)} fee)
               </p>
             )}
             {amount && amountE8s > BigInt(0) && isValid && (
               <p className="text-xs text-muted-foreground">
-                + {formatICP(ICP_FEE_E8S)} ICP Netzwerkgebühr
+                + {formatICP(ICP_FEE_E8S)} ICP network fee
               </p>
             )}
           </div>
@@ -273,7 +267,7 @@ function DonateDialog() {
             data-ocid="sidebar.cancel_button"
             className="border-gold/20 text-muted-foreground hover:text-foreground"
           >
-            Abbrechen
+            Cancel
           </Button>
           <Button
             onClick={handleDonate}
@@ -284,10 +278,10 @@ function DonateDialog() {
             {isSending ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                Sende...
+                Sending...
               </>
             ) : (
-              "Jetzt senden"
+              "Send Now"
             )}
           </Button>
         </DialogFooter>
@@ -303,7 +297,6 @@ export default function Sidebar() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Deposit Address Card -- only shown when logged in */}
       <DepositAddressCard />
 
       {/* Pool Balance Card */}
@@ -325,7 +318,7 @@ export default function Sidebar() {
               <p className="font-brand text-3xl font-black text-gold glow-gold">
                 {formatICP(poolQuery.data ?? BigInt(0))}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">ICP im Pool</p>
+              <p className="text-xs text-muted-foreground mt-1">ICP in Pool</p>
             </>
           )}
         </div>
@@ -338,7 +331,7 @@ export default function Sidebar() {
           </div>
           <div className="text-center p-2 rounded-lg bg-accent/30">
             <p className="text-[9px] text-muted-foreground uppercase tracking-wider">
-              Netzwerk
+              Network
             </p>
             <p className="text-xs font-bold text-neon-cyan mt-0.5">ICP</p>
           </div>
@@ -351,7 +344,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-2 mb-3">
           <Clock className="h-4 w-4 text-gold" />
           <p className="text-xs font-bold uppercase tracking-widest text-gold">
-            Letzte Gewinne
+            Recent Wins
           </p>
         </div>
 
@@ -366,9 +359,9 @@ export default function Sidebar() {
           </div>
         ) : !winsQuery.data || winsQuery.data.length === 0 ? (
           <div data-ocid="sidebar.empty_state" className="py-8 text-center">
-            <p className="text-sm text-muted-foreground">Noch keine Gewinne</p>
+            <p className="text-sm text-muted-foreground">No wins yet</p>
             <p className="text-xs text-muted-foreground/60 mt-1">
-              Sei der Erste!
+              Be the first!
             </p>
           </div>
         ) : (
@@ -400,7 +393,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-2 mb-3">
           <Trophy className="h-4 w-4 text-gold" />
           <p className="text-xs font-bold uppercase tracking-widest text-gold">
-            Bestenliste
+            Leaderboard
           </p>
         </div>
 
@@ -415,7 +408,7 @@ export default function Sidebar() {
           </div>
         ) : !leaderboardQuery.data || leaderboardQuery.data.length === 0 ? (
           <div className="py-6 text-center">
-            <p className="text-sm text-muted-foreground">Noch keine Einträge</p>
+            <p className="text-sm text-muted-foreground">No entries yet</p>
           </div>
         ) : (
           <div className="space-y-1.5">

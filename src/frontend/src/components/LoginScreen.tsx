@@ -12,43 +12,13 @@ import {
   Crown,
   Infinity as InfinityIcon,
   Loader2,
-  Shield,
-  Trophy,
-  Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
-const FEATURES = [
-  {
-    icon: Shield,
-    label: "Sichere Authentifizierung",
-    desc: "Internet Identity auf ICP",
-  },
-  {
-    icon: Zap,
-    label: "True Randomness",
-    desc: "On-chain Zuf\u00e4lligkeit via ICP",
-  },
-  {
-    icon: Trophy,
-    label: "Echter ICP Jackpot",
-    desc: "Echte ICP Auszahlungen",
-  },
-];
-
-const BET_SIZES = ["0.01", "0.1", "0.5", "1", "2.5", "10"];
-
 const AMBIENT_GLYPHS = [
-  {
-    glyph: "\u25c6",
-    id: "d1",
-    top: "8%",
-    left: "4%",
-    size: "2.5rem",
-    delay: 0,
-  },
+  { glyph: "◆", id: "d1", top: "8%", left: "4%", size: "2.5rem", delay: 0 },
   {
     glyph: "VII",
     id: "d2",
@@ -57,14 +27,7 @@ const AMBIENT_GLYPHS = [
     size: "1.1rem",
     delay: 1.2,
   },
-  {
-    glyph: "\u25c7",
-    id: "d3",
-    top: "35%",
-    left: "6%",
-    size: "1.8rem",
-    delay: 0.6,
-  },
+  { glyph: "◇", id: "d3", top: "35%", left: "6%", size: "1.8rem", delay: 0.6 },
   {
     glyph: "BAR",
     id: "d4",
@@ -73,14 +36,7 @@ const AMBIENT_GLYPHS = [
     size: "0.95rem",
     delay: 1.8,
   },
-  {
-    glyph: "\u2726",
-    id: "d5",
-    top: "72%",
-    left: "3%",
-    size: "2rem",
-    delay: 0.3,
-  },
+  { glyph: "✦", id: "d5", top: "72%", left: "3%", size: "2rem", delay: 0.3 },
   {
     glyph: "III",
     id: "d6",
@@ -89,22 +45,8 @@ const AMBIENT_GLYPHS = [
     size: "1.1rem",
     delay: 2.1,
   },
-  {
-    glyph: "\u25c6",
-    id: "d7",
-    top: "88%",
-    left: "12%",
-    size: "1.4rem",
-    delay: 0.9,
-  },
-  {
-    glyph: "\u2727",
-    id: "d8",
-    top: "12%",
-    left: "48%",
-    size: "1.6rem",
-    delay: 1.5,
-  },
+  { glyph: "◆", id: "d7", top: "88%", left: "12%", size: "1.4rem", delay: 0.9 },
+  { glyph: "✧", id: "d8", top: "12%", left: "48%", size: "1.6rem", delay: 1.5 },
 ];
 
 const SHIMMER_RAYS = [
@@ -146,7 +88,7 @@ const DISCLAIMER_SECTIONS = [
   {
     num: "5",
     title: "No Real-Money Guarantee / Risk of Loss",
-    body: "If the Application includes any form of monetary transactions, virtual currency, or items of value:\n\u2022 All participation is at the user's own risk\n\u2022 Losses may occur, including the complete loss of funds or virtual assets\n\u2022 There is no guarantee of winnings or returns\n\u2022 No refunds, reimbursements, or compensations are guaranteed under any circumstances",
+    body: "If the Application includes any form of monetary transactions, virtual currency, or items of value:\n• All participation is at the user's own risk\n• Losses may occur, including the complete loss of funds or virtual assets\n• There is no guarantee of winnings or returns\n• No refunds, reimbursements, or compensations are guaranteed under any circumstances",
   },
   {
     num: "6",
@@ -156,17 +98,17 @@ const DISCLAIMER_SECTIONS = [
   {
     num: "7",
     title: "No Liability",
-    body: "To the fullest extent permitted by law, the operator, developers, and affiliates shall not be liable for any:\n\u2022 Financial losses\n\u2022 Loss of data\n\u2022 System errors, bugs, or interruptions\n\u2022 Incorrect game outcomes\n\u2022 Indirect, incidental, or consequential damages\nUse of the Application is entirely at your own risk.",
+    body: "To the fullest extent permitted by law, the operator, developers, and affiliates shall not be liable for any:\n• Financial losses\n• Loss of data\n• System errors, bugs, or interruptions\n• Incorrect game outcomes\n• Indirect, incidental, or consequential damages\nUse of the Application is entirely at your own risk.",
   },
   {
     num: "8",
     title: '"As Is" and No Warranty',
-    body: 'The Application is provided "as is" and "as available", without warranties of any kind, whether express or implied, including but not limited to:\n\u2022 Fitness for a particular purpose\n\u2022 Availability or uptime\n\u2022 Accuracy or reliability of results',
+    body: 'The Application is provided "as is" and "as available", without warranties of any kind, whether express or implied, including but not limited to:\n• Fitness for a particular purpose\n• Availability or uptime\n• Accuracy or reliability of results',
   },
   {
     num: "9",
     title: "Technical Risks",
-    body: "Users acknowledge that the Application may contain:\n\u2022 Bugs or vulnerabilities\n\u2022 Incomplete or unstable features\n\u2022 Interruptions or unexpected shutdowns\nThe operator assumes no responsibility for such issues.",
+    body: "Users acknowledge that the Application may contain:\n• Bugs or vulnerabilities\n• Incomplete or unstable features\n• Interruptions or unexpected shutdowns\nThe operator assumes no responsibility for such issues.",
   },
   {
     num: "10",
@@ -176,7 +118,7 @@ const DISCLAIMER_SECTIONS = [
   {
     num: "11",
     title: "Right to Modify or Terminate",
-    body: "The operator reserves the right to:\n\u2022 Modify, suspend, or discontinue the Application at any time\n\u2022 Restrict or terminate access without prior notice\n\u2022 Change features, rules, or functionality at its sole discretion",
+    body: "The operator reserves the right to:\n• Modify, suspend, or discontinue the Application at any time\n• Restrict or terminate access without prior notice\n• Change features, rules, or functionality at its sole discretion",
   },
   {
     num: "12",
@@ -186,7 +128,7 @@ const DISCLAIMER_SECTIONS = [
   {
     num: "13",
     title: "Compliance Responsibility",
-    body: "Users are solely responsible for compliance with:\n\u2022 Gambling laws\n\u2022 Financial regulations\n\u2022 Tax obligations\nin their respective jurisdiction.",
+    body: "Users are solely responsible for compliance with:\n• Gambling laws\n• Financial regulations\n• Tax obligations\nin their respective jurisdiction.",
   },
   {
     num: "14",
@@ -263,14 +205,12 @@ export default function LoginScreen() {
             {glyph}
           </div>
         ))}
-
-        {/* Ambient glow orbs */}
         <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] rounded-full bg-[oklch(0.71_0.09_73/5%)] blur-[160px]" />
         <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] rounded-full bg-[oklch(0.71_0.09_73/4%)] blur-[130px]" />
         <div className="absolute top-2/3 left-1/4 w-[300px] h-[300px] rounded-full bg-[oklch(0.55_0.06_73/4%)] blur-[100px]" />
       </div>
 
-      {/* ─── CINEMATIC SPLASH OVERLAY ─── */}
+      {/* Cinematic Splash Overlay */}
       <AnimatePresence>
         {phase < 2 && (
           <motion.div
@@ -281,7 +221,6 @@ export default function LoginScreen() {
             className="absolute inset-0 z-50 flex flex-col items-center justify-center"
             style={{ background: "oklch(0.04 0.005 267)" }}
           >
-            {/* Shimmer light rays */}
             <div
               className="absolute inset-0 overflow-hidden opacity-30"
               aria-hidden="true"
@@ -308,14 +247,12 @@ export default function LoginScreen() {
               ))}
             </div>
 
-            {/* Logo cluster */}
             <motion.div
               initial={{ opacity: 0, scale: 0.72, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="relative flex flex-col items-center"
             >
-              {/* Crown */}
               <motion.div
                 animate={{
                   filter:
@@ -341,7 +278,6 @@ export default function LoginScreen() {
                 />
               </motion.div>
 
-              {/* SPINLUXE wordmark */}
               <motion.h1
                 animate={{
                   textShadow:
@@ -356,7 +292,6 @@ export default function LoginScreen() {
                 SPINLUXE
               </motion.h1>
 
-              {/* Golden sweep line */}
               <motion.div
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={phase >= 1 ? { scaleX: 1, opacity: 1 } : {}}
@@ -388,13 +323,12 @@ export default function LoginScreen() {
                         fontSize: sid === "s1" ? "0.5rem" : "0.6rem",
                       }}
                     >
-                      \u25c6
+                      ◆
                     </span>
                   ))}
                 </div>
               </motion.div>
 
-              {/* Tagline */}
               <motion.p
                 initial={{ opacity: 0, y: 6 }}
                 animate={phase >= 1 ? { opacity: 1, y: 0 } : {}}
@@ -402,7 +336,7 @@ export default function LoginScreen() {
                 className="font-accent-italic text-xl tracking-[0.18em] sm:text-2xl"
                 style={{ color: "oklch(0.82 0.06 73)" }}
               >
-                Wo Exklusivit\u00e4t auf Fortune trifft
+                Where Exclusivity Meets Fortune
               </motion.p>
 
               <motion.p
@@ -412,11 +346,10 @@ export default function LoginScreen() {
                 className="mt-3 text-xs uppercase tracking-[0.35em]"
                 style={{ color: "oklch(0.55 0.04 73)" }}
               >
-                Premium Casino \u00b7 Internet Computer Protocol
+                Premium Casino · Internet Computer Protocol
               </motion.p>
             </motion.div>
 
-            {/* Pulsing diamond loader */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={phase >= 1 ? { opacity: 1 } : {}}
@@ -439,7 +372,7 @@ export default function LoginScreen() {
                     display: "inline-block",
                   }}
                 >
-                  \u25c6
+                  ◆
                 </motion.span>
               ))}
             </motion.div>
@@ -509,7 +442,7 @@ export default function LoginScreen() {
             transition={{ delay: 0.35, duration: 0.8 }}
             className="text-[oklch(0.87_0.09_83)] text-sm tracking-[0.25em] uppercase font-light mb-2 sm:text-base"
           >
-            Premium Casino auf dem Internet Computer
+            Premium Casino on the Internet Computer
           </motion.p>
 
           <motion.p
@@ -518,7 +451,7 @@ export default function LoginScreen() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="font-accent-italic text-[oklch(0.82_0.06_73)] text-lg italic sm:text-xl"
           >
-            Wo Exklusivit\u00e4t auf Fortune trifft
+            Where Exclusivity Meets Fortune
           </motion.p>
         </motion.div>
 
@@ -530,67 +463,21 @@ export default function LoginScreen() {
           className="ornament-divider w-72 mb-8 sm:w-96"
         />
 
-        {/* Feature badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.65, duration: 0.6 }}
-          className="flex flex-wrap justify-center gap-3 mb-10 sm:gap-5"
-        >
-          {FEATURES.map(({ icon: Icon, label, desc }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm"
-            >
-              <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gold" />
-              <div className="text-left">
-                <p className="text-[10px] font-semibold leading-none text-[oklch(0.87_0.09_83)]">
-                  {label}
-                </p>
-                <p className="mt-0.5 text-[9px] leading-tight text-[oklch(0.65_0.04_73)]">
-                  {desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
         {/* Login card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.75, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ delay: 0.65, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-md"
         >
           <div className="glass-card p-8 sm:p-10">
             <div className="mb-6 text-center">
-              <h2 className="mb-2 font-playfair text-2xl font-bold tracking-wider text-[oklch(0.87_0.09_83)]">
-                Exklusiver Zugang
+              <h2 className="mb-1 font-playfair text-2xl font-bold tracking-wider text-[oklch(0.87_0.09_83)]">
+                Exclusive Access
               </h2>
-              <p className="text-sm leading-relaxed text-[oklch(0.65_0.04_73)]">
-                Authentifiziere dich sicher mit deiner Internet Identity \u2014
-                anonym und dezentral.
-              </p>
             </div>
 
             <div className="ornament-divider-sm mb-6" />
-
-            {/* Bet size chips */}
-            <div className="mb-7 flex justify-center gap-2">
-              {BET_SIZES.map((b) => (
-                <div
-                  key={b}
-                  className="flex flex-col items-center rounded-full border border-gold/25 bg-gold/5 px-3 py-2 transition-colors hover:bg-gold/10"
-                >
-                  <span className="font-playfair text-xs font-bold text-gold">
-                    {b}
-                  </span>
-                  <span className="text-[8px] tracking-wider text-[oklch(0.65_0.04_73)]">
-                    ICP
-                  </span>
-                </div>
-              ))}
-            </div>
 
             {/* Error state */}
             {isLoginError && loginError && (
@@ -612,20 +499,15 @@ export default function LoginScreen() {
               {isLoggingIn ? (
                 <>
                   <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                  Verbinde...
+                  Connecting...
                 </>
               ) : (
                 <>
                   <InfinityIcon className="mr-3 h-5 w-5" />
-                  Mit Internet Identity Anmelden
+                  Sign in with Internet Identity
                 </>
               )}
             </Button>
-
-            <p className="mt-4 text-center text-[9px] uppercase tracking-wider text-[oklch(0.45_0.03_73)]">
-              Kein Konto erforderlich \u00b7 Keine Passw\u00f6rter \u00b7 100%
-              dezentral
-            </p>
           </div>
         </motion.div>
 
@@ -633,7 +515,7 @@ export default function LoginScreen() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.85, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ delay: 0.75, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-md mt-4"
           data-ocid="disclaimer.panel"
         >
@@ -654,15 +536,15 @@ export default function LoginScreen() {
                   className="text-[11px] font-semibold uppercase tracking-wider mb-1"
                   style={{ color: "oklch(0.71 0.09 73)" }}
                 >
-                  Wichtiger Hinweis
+                  Important Notice
                 </p>
                 <p
                   className="text-[11px] leading-relaxed"
                   style={{ color: "oklch(0.65 0.04 73)" }}
                 >
-                  Diese Anwendung ist ein experimentelles Testsystem (MVP).
-                  Keine lizenzierte Gl\u00fccksspielplattform. Nur f\u00fcr
-                  Personen ab 18 Jahren. Nutzung auf eigenes Risiko.
+                  This application is an experimental test system (MVP). Not a
+                  licensed gambling platform. For persons 18+ only. Use at your
+                  own risk.
                 </p>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -672,7 +554,7 @@ export default function LoginScreen() {
                       className="mt-2 text-[11px] underline underline-offset-2 transition-colors hover:opacity-80"
                       style={{ color: "oklch(0.71 0.09 73)" }}
                     >
-                      Vollst\u00e4ndige Nutzungsbedingungen lesen
+                      Read full terms of use
                     </button>
                   </DialogTrigger>
                   <DialogContent
@@ -688,7 +570,7 @@ export default function LoginScreen() {
                         className="font-playfair text-xl font-bold tracking-wide"
                         style={{ color: "oklch(0.71 0.09 73)" }}
                       >
-                        Rechtlicher Hinweis &amp; Nutzungsbedingungen
+                        Legal Disclaimer &amp; Terms of Use
                       </DialogTitle>
                       <div
                         style={{
@@ -755,7 +637,7 @@ export default function LoginScreen() {
                           variant="outline"
                           className="border-gold/40 text-gold hover:bg-gold/10 hover:text-gold text-xs uppercase tracking-wider"
                         >
-                          Schlie\u00dfen
+                          Close
                         </Button>
                       </DialogTrigger>
                     </div>
@@ -770,28 +652,26 @@ export default function LoginScreen() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={phase >= 2 ? { opacity: 1 } : {}}
-          transition={{ delay: 0.95, duration: 0.8 }}
+          transition={{ delay: 0.85, duration: 0.8 }}
           className="mt-5 text-center text-[10px] uppercase tracking-[0.18em]"
           style={{ color: "oklch(0.40 0.03 73)" }}
         >
-          18+ \u00b7 MVP Testanwendung \u00b7 Nutzung auf eigenes Risiko \u00b7
-          Keine Lizenzierte Gl\u00fccksspielplattform
+          18+ · MVP Test Application · Use at Your Own Risk · No Licensed
+          Gambling Platform
         </motion.p>
       </motion.main>
 
-      {/* Ambient glow bottom */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48">
         <div className="absolute bottom-0 left-1/2 h-full w-full -translate-x-1/2 bg-gradient-to-t from-[oklch(0.71_0.09_73/8%)] to-transparent" />
       </div>
 
-      {/* Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
         animate={phase >= 2 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, delay: 0.9 }}
         className="relative z-10 py-4 text-center text-[10px] tracking-wider text-[oklch(0.35_0.02_73)]"
       >
-        \u00a9 {new Date().getFullYear()} SpinLuxe \u00b7{" "}
+        © {new Date().getFullYear()} SpinLuxe ·{" "}
         <a
           href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
           target="_blank"

@@ -35,12 +35,12 @@ function formatICP(e8s: bigint): string {
 function getWinLabel(multiplier: bigint, reels: SlotSymbol[]): string {
   const sym = reels[1] ?? reels[0];
   const symLabel: Record<string, string> = {
-    [SlotSymbol.seven]: "7️⃣ 7️⃣ 7️⃣",
+    [SlotSymbol.seven]: "7 7 7",
     [SlotSymbol.bar]: "BAR BAR BAR",
-    [SlotSymbol.bell]: "🔔🔔🔔",
-    [SlotSymbol.cherry]: "🍒🍒🍒",
-    [SlotSymbol.orange]: "🍊🍊🍊",
-    [SlotSymbol.lemon]: "🍋🍋🍋",
+    [SlotSymbol.bell]: "BELL BELL BELL",
+    [SlotSymbol.cherry]: "CHERRY CHERRY CHERRY",
+    [SlotSymbol.orange]: "ORANGE ORANGE ORANGE",
+    [SlotSymbol.lemon]: "LEMON LEMON LEMON",
   };
   const mult = Number(multiplier) / 100;
   return `${sym ? (symLabel[sym] ?? "WIN") : "WIN"} • ${mult.toFixed(0)}×`;
@@ -82,7 +82,6 @@ export default function SlotMachine() {
     if (stoppedReels.current >= 3) {
       setTimeout(() => {
         setShowResult(true);
-        // Apply pending result if animation stopped before backend returned
         if (pendingResultRef.current) {
           const r = pendingResultRef.current;
           pendingResultRef.current = null;
@@ -90,7 +89,7 @@ export default function SlotMachine() {
             setAnimState("win");
             setLastWin(r.payout);
             playWin();
-            toast.success(`Gewonnen! +${formatICP(r.payout)} ICP`);
+            toast.success(`You won! +${formatICP(r.payout)} ICP`);
           } else {
             setAnimState("lose");
             playLose();
@@ -120,20 +119,18 @@ export default function SlotMachine() {
       setSpinning(true);
       startSpinSound();
 
-      // Force-stop animation after MAX_SPIN_MS
       spinTimeoutRef.current = setTimeout(() => {
         stopSpinSound();
         setSpinning(false);
       }, MAX_SPIN_MS);
 
-      toast.info("ICP Freigabe wird beantragt...", { duration: 3000 });
+      toast.info("Requesting ICP approval...", { duration: 3000 });
       const approvalAmount = selectedBet.e8s + ICP_FEE * 2n;
       await approveICP(identity, backendCanisterId, approvalAmount);
 
-      toast.info("Spin läuft...", { duration: 2000 });
+      toast.info("Spinning...", { duration: 2000 });
       const result = await actor.spin(selectedBet.e8s);
 
-      // Clear the timeout — backend returned in time
       if (spinTimeoutRef.current) {
         clearTimeout(spinTimeoutRef.current);
         spinTimeoutRef.current = null;
@@ -145,27 +142,22 @@ export default function SlotMachine() {
       setReelResults([r0, r1, r2]);
       setSpinResult(result);
 
-      // Check if animation already stopped (timeout fired)
       if (!spinning || stoppedReels.current >= 3) {
-        // Reels already stopped — apply result now
         if (result.won) {
           setAnimState("win");
           setLastWin(result.payout);
           playWin();
-          toast.success(`Gewonnen! +${formatICP(result.payout)} ICP`);
+          toast.success(`You won! +${formatICP(result.payout)} ICP`);
         } else {
           setAnimState("lose");
           playLose();
         }
         invalidate();
       } else {
-        // Reels still spinning — store result; handleReelStopped will apply it
         pendingResultRef.current = result;
-
         if (result.won) {
           setLastWin(result.payout);
         }
-
         stopSpinSound();
         setSpinning(false);
       }
@@ -175,7 +167,7 @@ export default function SlotMachine() {
         spinTimeoutRef.current = null;
       }
       stopSpinSound();
-      const msg = e instanceof Error ? e.message : "Spin fehlgeschlagen";
+      const msg = e instanceof Error ? e.message : "Spin failed";
       toast.error(msg);
       setSpinning(false);
       setAnimState("idle");
@@ -199,7 +191,7 @@ export default function SlotMachine() {
           </div>
           <div className="casino-card p-3 text-center">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-              Gewonnen
+              Won
             </p>
             <p className="text-base font-black text-neon-green">
               {formatICP(myStats.totalWon)} ICP
@@ -207,7 +199,7 @@ export default function SlotMachine() {
           </div>
           <div className="casino-card p-3 text-center">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-              Gespielt
+              Wagered
             </p>
             <p className="text-base font-black text-muted-foreground">
               {formatICP(myStats.totalSpent)} ICP
@@ -228,7 +220,7 @@ export default function SlotMachine() {
         </div>
         <div className="casino-card p-3 text-center">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-            Letzter Gewinn
+            Last Win
           </p>
           <p className="text-base font-bold text-foreground">
             {lastWin > 0n ? `+${formatICP(lastWin)} ICP` : "—"}
@@ -267,7 +259,6 @@ export default function SlotMachine() {
           <div className="absolute -right-2 top-1/2 -translate-y-1/2 z-20">
             <div className="w-2 h-0.5 bg-gold/80" />
           </div>
-
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             {([0, 1, 2] as const).map((i) => (
               <Reel
@@ -333,10 +324,10 @@ export default function SlotMachine() {
               ) : (
                 <>
                   <p className="font-brand text-3xl font-black text-destructive uppercase">
-                    Verloren
+                    LOST
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Nächstes Mal klappt es!
+                    Better luck next time!
                   </p>
                 </>
               )}
@@ -353,7 +344,7 @@ export default function SlotMachine() {
       <div className="casino-card p-4 sm:p-6">
         <div className="mb-5">
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-            Einsatz wählen
+            Select Bet
           </p>
           <div className="grid grid-cols-5 gap-2" data-ocid="slot.tab">
             {BET_OPTIONS.map((bet, idx) => (
@@ -370,11 +361,7 @@ export default function SlotMachine() {
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <span
-                  className={`text-sm font-black ${
-                    selectedBetIdx === idx
-                      ? "text-gold glow-gold"
-                      : "text-foreground"
-                  }`}
+                  className={`text-sm font-black ${selectedBetIdx === idx ? "text-gold glow-gold" : "text-foreground"}`}
                 >
                   {bet.label}
                 </span>
@@ -402,7 +389,7 @@ export default function SlotMachine() {
           {spinning ? (
             <span className="flex items-center justify-center gap-3">
               <Loader2 className="h-6 w-6 animate-spin" />
-              Dreht...
+              Spinning...
             </span>
           ) : (
             "SPIN"
@@ -414,12 +401,12 @@ export default function SlotMachine() {
             data-ocid="slot.error_state"
             className="text-center text-xs text-destructive mt-3"
           >
-            Pool ist leer — Bitte später versuchen
+            Pool is empty — Please try again later
           </p>
         )}
         {!identity && (
           <p className="text-center text-xs text-muted-foreground mt-3">
-            Bitte zuerst anmelden
+            Please log in first
           </p>
         )}
       </div>

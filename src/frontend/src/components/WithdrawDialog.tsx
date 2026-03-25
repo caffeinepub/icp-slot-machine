@@ -61,7 +61,7 @@ export default function WithdrawDialog({
   async function handleSubmit() {
     setError(null);
     if (!identity) {
-      setError("Nicht eingeloggt.");
+      setError("Not logged in.");
       return;
     }
 
@@ -69,20 +69,20 @@ export default function WithdrawDialog({
     try {
       principal = Principal.fromText(destination.trim());
     } catch {
-      setError("Ungültige Principal ID. Bitte prüfe die Ziel-Adresse.");
+      setError("Invalid Principal ID. Please check the destination address.");
       return;
     }
 
     const amountNum = Number.parseFloat(amount);
     if (Number.isNaN(amountNum) || amountNum <= 0) {
-      setError("Bitte gib einen gültigen Betrag ein.");
+      setError("Please enter a valid amount.");
       return;
     }
 
     const amountE8s = BigInt(Math.round(amountNum * 100_000_000));
     if (amountE8s + ICP_FEE > balance) {
       setError(
-        `Nicht genug Guthaben. Verfügbar: ${formatICP(maxSendable)} ICP (nach Gebühr).`,
+        `Insufficient balance. Available: ${formatICP(maxSendable)} ICP (after fee).`,
       );
       return;
     }
@@ -96,7 +96,7 @@ export default function WithdrawDialog({
         handleClose(false);
       }, 1500);
     } catch (e: any) {
-      setError(e?.message ?? "Transfer fehlgeschlagen.");
+      setError(e?.message ?? "Transfer failed.");
     } finally {
       setLoading(false);
     }
@@ -111,7 +111,7 @@ export default function WithdrawDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-gold font-brand text-lg tracking-widest uppercase">
             <ArrowUpRight className="h-5 w-5" />
-            ICP Auszahlen
+            Withdraw ICP
           </DialogTitle>
         </DialogHeader>
 
@@ -120,12 +120,12 @@ export default function WithdrawDialog({
             data-ocid="withdraw.success_state"
             className="py-8 text-center text-green-400 font-semibold text-base"
           >
-            Transfer erfolgreich!
+            Transfer successful!
           </div>
         ) : (
           <div className="space-y-5 pt-2">
             <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-gold/5 border border-gold/10 text-xs">
-              <span className="text-muted-foreground">Verfügbar</span>
+              <span className="text-muted-foreground">Available</span>
               <span className="font-bold text-gold tabular-nums">
                 {formatICP(balance)} ICP
               </span>
@@ -133,7 +133,7 @@ export default function WithdrawDialog({
 
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground uppercase tracking-widest">
-                Ziel-Adresse (Principal ID)
+                Destination Address (Principal ID)
               </Label>
               <Input
                 data-ocid="withdraw.input"
@@ -147,7 +147,7 @@ export default function WithdrawDialog({
 
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground uppercase tracking-widest">
-                Betrag (ICP)
+                Amount (ICP)
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -174,7 +174,7 @@ export default function WithdrawDialog({
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Transaktionsgebühr: 0.0001 ICP
+                Transaction fee: 0.0001 ICP
               </p>
             </div>
 
@@ -195,7 +195,7 @@ export default function WithdrawDialog({
                 data-ocid="withdraw.cancel_button"
                 className="flex-1 border-gold/20 text-muted-foreground hover:text-white hover:bg-white/5"
               >
-                Abbrechen
+                Cancel
               </Button>
               <Button
                 onClick={handleSubmit}
@@ -208,7 +208,7 @@ export default function WithdrawDialog({
                 ) : (
                   <ArrowUpRight className="h-4 w-4" />
                 )}
-                Senden
+                Send
               </Button>
             </div>
           </div>
