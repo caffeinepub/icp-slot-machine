@@ -7,12 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  AlertTriangle,
-  Crown,
-  Infinity as InfinityIcon,
-  Loader2,
-} from "lucide-react";
+import { AlertTriangle, Crown, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
@@ -338,16 +333,6 @@ export default function LoginScreen() {
               >
                 Where Exclusivity Meets Fortune
               </motion.p>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={phase >= 1 ? { opacity: 1 } : {}}
-                transition={{ duration: 0.7, delay: 0.5 }}
-                className="mt-3 text-xs uppercase tracking-[0.35em]"
-                style={{ color: "oklch(0.55 0.04 73)" }}
-              >
-                Premium Casino · Internet Computer Protocol
-              </motion.p>
             </motion.div>
 
             <motion.div
@@ -435,24 +420,6 @@ export default function LoginScreen() {
           >
             SPINLUXE
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={phase >= 2 ? { opacity: 1 } : {}}
-            transition={{ delay: 0.35, duration: 0.8 }}
-            className="text-[oklch(0.87_0.09_83)] text-sm tracking-[0.25em] uppercase font-light mb-2 sm:text-base"
-          >
-            Premium Casino on the Internet Computer
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={phase >= 2 ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="font-accent-italic text-[oklch(0.82_0.06_73)] text-lg italic sm:text-xl"
-          >
-            Where Exclusivity Meets Fortune
-          </motion.p>
         </motion.div>
 
         {/* Ornamental divider */}
@@ -471,12 +438,6 @@ export default function LoginScreen() {
           className="w-full max-w-md"
         >
           <div className="glass-card p-8 sm:p-10">
-            <div className="mb-6 text-center">
-              <h2 className="mb-1 font-playfair text-2xl font-bold tracking-wider text-[oklch(0.87_0.09_83)]">
-                Exclusive Access
-              </h2>
-            </div>
-
             <div className="ornament-divider-sm mb-6" />
 
             {/* Error state */}
@@ -502,10 +463,7 @@ export default function LoginScreen() {
                   Connecting...
                 </>
               ) : (
-                <>
-                  <InfinityIcon className="mr-3 h-5 w-5" />
-                  Sign in with Internet Identity
-                </>
+                "Login"
               )}
             </Button>
           </div>
