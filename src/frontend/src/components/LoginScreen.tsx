@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  AlertTriangle,
   Crown,
   Infinity as InfinityIcon,
   Loader2,
@@ -31,7 +40,6 @@ const FEATURES = [
 
 const BET_SIZES = ["0.01", "0.1", "0.5", "1", "2.5", "10"];
 
-// Luxury ambient decorations — NO emojis, only typographic glyphs & Roman numerals
 const AMBIENT_GLYPHS = [
   {
     glyph: "\u25c6",
@@ -99,7 +107,6 @@ const AMBIENT_GLYPHS = [
   },
 ];
 
-// Shimmer ray config — stable IDs for keys
 const SHIMMER_RAYS = [
   { id: "ray0", left: "10%", angle: -20 },
   { id: "ray1", left: "26%", angle: -12 },
@@ -109,11 +116,103 @@ const SHIMMER_RAYS = [
   { id: "ray5", left: "90%", angle: 20 },
 ];
 
-// Pulsing diamonds — stable IDs
 const PULSE_DOTS = [
   { id: "dot0", delay: 0 },
   { id: "dot1", delay: 0.2 },
   { id: "dot2", delay: 0.4 },
+];
+
+const DISCLAIMER_SECTIONS = [
+  {
+    num: "1",
+    title: "Application (Test Environment)",
+    body: 'This application ("Application") is provided solely for testing, demonstration, and development purposes as a Minimum Viable Product ("MVP"). It does not constitute a fully developed, licensed, or regulated gambling platform.',
+  },
+  {
+    num: "2",
+    title: "No Licensed Gambling Service",
+    body: "The Application does not represent a legally licensed gambling service in any jurisdiction. Any gameplay features, mechanics, or systems resembling gambling are purely experimental and intended for testing purposes only.",
+  },
+  {
+    num: "3",
+    title: "Jurisdictional Restrictions",
+    body: "Access to and use of this Application may be illegal or restricted in certain countries or regions. Users are solely responsible for determining whether accessing or using the Application is lawful in their jurisdiction. By using this Application, you represent and warrant that you are doing so in compliance with all applicable local, national, and international laws.",
+  },
+  {
+    num: "4",
+    title: "Age Restriction",
+    body: "This Application is intended only for individuals who are at least 18 years old (or the legal age in their jurisdiction, whichever is higher). By using the Application, you confirm that you meet the applicable legal age requirements.",
+  },
+  {
+    num: "5",
+    title: "No Real-Money Guarantee / Risk of Loss",
+    body: "If the Application includes any form of monetary transactions, virtual currency, or items of value:\n\u2022 All participation is at the user's own risk\n\u2022 Losses may occur, including the complete loss of funds or virtual assets\n\u2022 There is no guarantee of winnings or returns\n\u2022 No refunds, reimbursements, or compensations are guaranteed under any circumstances",
+  },
+  {
+    num: "6",
+    title: "Virtual Currency & Assets",
+    body: "Any virtual currency, tokens, or in-app items have no real-world monetary value unless explicitly stated otherwise. They are provided solely for testing and gameplay simulation purposes.",
+  },
+  {
+    num: "7",
+    title: "No Liability",
+    body: "To the fullest extent permitted by law, the operator, developers, and affiliates shall not be liable for any:\n\u2022 Financial losses\n\u2022 Loss of data\n\u2022 System errors, bugs, or interruptions\n\u2022 Incorrect game outcomes\n\u2022 Indirect, incidental, or consequential damages\nUse of the Application is entirely at your own risk.",
+  },
+  {
+    num: "8",
+    title: '"As Is" and No Warranty',
+    body: 'The Application is provided "as is" and "as available", without warranties of any kind, whether express or implied, including but not limited to:\n\u2022 Fitness for a particular purpose\n\u2022 Availability or uptime\n\u2022 Accuracy or reliability of results',
+  },
+  {
+    num: "9",
+    title: "Technical Risks",
+    body: "Users acknowledge that the Application may contain:\n\u2022 Bugs or vulnerabilities\n\u2022 Incomplete or unstable features\n\u2022 Interruptions or unexpected shutdowns\nThe operator assumes no responsibility for such issues.",
+  },
+  {
+    num: "10",
+    title: "Responsible Use / No Encouragement of Gambling",
+    body: "This Application is not intended to promote or encourage gambling behavior. Users should act responsibly and avoid financial risks.",
+  },
+  {
+    num: "11",
+    title: "Right to Modify or Terminate",
+    body: "The operator reserves the right to:\n\u2022 Modify, suspend, or discontinue the Application at any time\n\u2022 Restrict or terminate access without prior notice\n\u2022 Change features, rules, or functionality at its sole discretion",
+  },
+  {
+    num: "12",
+    title: "No User Entitlement",
+    body: "Users have no legal entitlement to continued access, features, winnings, balances, or any part of the Application.",
+  },
+  {
+    num: "13",
+    title: "Compliance Responsibility",
+    body: "Users are solely responsible for compliance with:\n\u2022 Gambling laws\n\u2022 Financial regulations\n\u2022 Tax obligations\nin their respective jurisdiction.",
+  },
+  {
+    num: "14",
+    title: "No Financial or Legal Advice",
+    body: "Nothing within the Application constitutes financial, legal, or investment advice.",
+  },
+  {
+    num: "15",
+    title: "Data & Privacy (Basic Notice)",
+    body: "By using the Application, users acknowledge that limited technical data (e.g., logs, usage metrics) may be collected for testing and improvement purposes. No guarantee is made regarding data security in this MVP stage.",
+  },
+  {
+    num: "16",
+    title: "Indemnification",
+    body: "Users agree to indemnify and hold harmless the operator from any claims, damages, or liabilities arising from misuse of the Application or violation of applicable laws.",
+  },
+  {
+    num: "17",
+    title: "Governing Law",
+    body: "This disclaimer shall be governed by and interpreted in accordance with applicable laws as determined by the operator, without regard to conflict of law principles.",
+  },
+  {
+    num: "18",
+    title: "Acceptance of Terms",
+    body: "By accessing or using this Application, you confirm that you have read, understood, and agreed to this disclaimer and all associated risks.",
+  },
 ];
 
 type SplashPhase = 0 | 1 | 2;
@@ -529,6 +628,155 @@ export default function LoginScreen() {
             </p>
           </div>
         </motion.div>
+
+        {/* Disclaimer notice block */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.85, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md mt-4"
+          data-ocid="disclaimer.panel"
+        >
+          <div
+            className="rounded-xl border px-5 py-4 backdrop-blur-sm"
+            style={{
+              borderColor: "oklch(0.71 0.09 73 / 30%)",
+              background: "oklch(0.06 0.005 267 / 80%)",
+            }}
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle
+                className="mt-0.5 h-4 w-4 flex-shrink-0"
+                style={{ color: "oklch(0.71 0.09 73)" }}
+              />
+              <div className="flex-1 min-w-0">
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-wider mb-1"
+                  style={{ color: "oklch(0.71 0.09 73)" }}
+                >
+                  Wichtiger Hinweis
+                </p>
+                <p
+                  className="text-[11px] leading-relaxed"
+                  style={{ color: "oklch(0.65 0.04 73)" }}
+                >
+                  Diese Anwendung ist ein experimentelles Testsystem (MVP).
+                  Keine lizenzierte Gl\u00fccksspielplattform. Nur f\u00fcr
+                  Personen ab 18 Jahren. Nutzung auf eigenes Risiko.
+                </p>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      data-ocid="disclaimer.open_modal_button"
+                      className="mt-2 text-[11px] underline underline-offset-2 transition-colors hover:opacity-80"
+                      style={{ color: "oklch(0.71 0.09 73)" }}
+                    >
+                      Vollst\u00e4ndige Nutzungsbedingungen lesen
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent
+                    data-ocid="disclaimer.dialog"
+                    className="max-w-2xl border-0 p-0 shadow-2xl"
+                    style={{
+                      background: "oklch(0.06 0.005 267)",
+                      border: "1px solid oklch(0.71 0.09 73 / 25%)",
+                    }}
+                  >
+                    <DialogHeader className="px-6 pt-6 pb-0">
+                      <DialogTitle
+                        className="font-playfair text-xl font-bold tracking-wide"
+                        style={{ color: "oklch(0.71 0.09 73)" }}
+                      >
+                        Rechtlicher Hinweis &amp; Nutzungsbedingungen
+                      </DialogTitle>
+                      <div
+                        style={{
+                          height: "1px",
+                          marginTop: "12px",
+                          background:
+                            "linear-gradient(to right, oklch(0.71 0.09 73 / 60%), transparent)",
+                        }}
+                      />
+                      <p
+                        className="text-[11px] uppercase tracking-widest pt-2"
+                        style={{ color: "oklch(0.55 0.04 73)" }}
+                      >
+                        LEGAL DISCLAIMER, TERMS OF USE &amp; LIMITATION OF
+                        LIABILITY (MVP TEST APPLICATION)
+                      </p>
+                    </DialogHeader>
+                    <ScrollArea className="h-[60vh] px-6 pb-6">
+                      <div className="space-y-5 pt-4">
+                        {DISCLAIMER_SECTIONS.map(({ num, title, body }) => (
+                          <div key={num}>
+                            <h3
+                              className="mb-1.5 font-playfair text-sm font-bold"
+                              style={{ color: "oklch(0.71 0.09 73)" }}
+                            >
+                              {num}. {title}
+                            </h3>
+                            <p
+                              className="text-[12px] leading-relaxed whitespace-pre-line"
+                              style={{ color: "oklch(0.65 0.04 73)" }}
+                            >
+                              {body}
+                            </p>
+                          </div>
+                        ))}
+                        <div
+                          className="mt-6 rounded-lg border px-4 py-3"
+                          style={{
+                            borderColor: "oklch(0.71 0.09 73 / 40%)",
+                            background: "oklch(0.10 0.008 267 / 80%)",
+                          }}
+                        >
+                          <p
+                            className="text-[11px] font-semibold leading-relaxed"
+                            style={{ color: "oklch(0.87 0.09 83)" }}
+                          >
+                            IMPORTANT NOTICE: This Application is an
+                            experimental test system. Do not use it for real
+                            financial activities unless explicitly authorized
+                            and legally compliant.
+                          </p>
+                        </div>
+                      </div>
+                    </ScrollArea>
+                    <div
+                      className="flex justify-end px-6 pb-5 pt-2"
+                      style={{
+                        borderTop: "1px solid oklch(0.71 0.09 73 / 15%)",
+                      }}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          data-ocid="disclaimer.close_button"
+                          variant="outline"
+                          className="border-gold/40 text-gold hover:bg-gold/10 hover:text-gold text-xs uppercase tracking-wider"
+                        >
+                          Schlie\u00dfen
+                        </Button>
+                      </DialogTrigger>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Bottom compliance notice */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={phase >= 2 ? { opacity: 1 } : {}}
+          transition={{ delay: 0.95, duration: 0.8 }}
+          className="mt-5 text-center text-[10px] uppercase tracking-[0.18em]"
+          style={{ color: "oklch(0.40 0.03 73)" }}
+        >
+          18+ \u00b7 MVP Testanwendung \u00b7 Nutzung auf eigenes Risiko \u00b7
+          Keine Lizenzierte Gl\u00fccksspielplattform
+        </motion.p>
       </motion.main>
 
       {/* Ambient glow bottom */}
