@@ -15,8 +15,14 @@ import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useMyBalance } from "../hooks/useQueries";
 import WithdrawDialog from "./WithdrawDialog";
 
+/** Format e8s as ICP with exactly 5 decimal places, no floating-point errors */
 function formatICP(e8s: bigint): string {
-  return (Number(e8s) / 100_000_000).toFixed(2);
+  const isNeg = e8s < 0n;
+  const abs = isNeg ? -e8s : e8s;
+  const intPart = abs / 100_000_000n;
+  const fracPart = abs % 100_000_000n;
+  const frac5 = fracPart.toString().padStart(8, "0").slice(0, 5);
+  return `${isNeg ? "-" : ""}${intPart}.${frac5}`;
 }
 
 export default function Header() {

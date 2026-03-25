@@ -15,8 +15,14 @@ import { transferICP } from "../utils/icrc2";
 
 const ICP_FEE = BigInt(10_000);
 
+/** Format e8s as ICP with exactly 5 decimal places, no floating-point errors */
 function formatICP(e8s: bigint): string {
-  return (Number(e8s) / 100_000_000).toFixed(4);
+  const isNeg = e8s < 0n;
+  const abs = isNeg ? -e8s : e8s;
+  const intPart = abs / 100_000_000n;
+  const fracPart = abs % 100_000_000n;
+  const frac5 = fracPart.toString().padStart(8, "0").slice(0, 5);
+  return `${isNeg ? "-" : ""}${intPart}.${frac5}`;
 }
 
 interface WithdrawDialogProps {
@@ -43,7 +49,7 @@ export default function WithdrawDialog({
   const maxSendable = balance > ICP_FEE ? balance - ICP_FEE : BigInt(0);
 
   function handleMax() {
-    setAmount((Number(maxSendable) / 100_000_000).toFixed(4));
+    setAmount(formatICP(maxSendable));
   }
 
   function handleClose(val: boolean) {
@@ -153,11 +159,11 @@ export default function WithdrawDialog({
                 <Input
                   data-ocid="withdraw.textarea"
                   type="number"
-                  min="0.0001"
-                  step="0.0001"
+                  min="0.00001"
+                  step="0.00001"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.0000"
+                  placeholder="0.00000"
                   disabled={loading}
                   className="bg-black/40 border-gold/20 text-white placeholder:text-white/20 focus:border-gold/50 tabular-nums"
                 />
